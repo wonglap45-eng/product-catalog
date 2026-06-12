@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<style>
+    /* ═══════════════════════════════════════════
+       PDF 打印设置 - A4 横向
+       ═══════════════════════════════════════════ */
+    @page {
+        size: A4 landscape;
+        margin: 0;
+    }
+    :root {
+        --navy: #1a2744;
+        --navy-light: #1e3a5f;
+        --gold: #c4a44a;
+        --gold-light: #d4af37;
+        --white: #ffffff;
+        --cream: #fafaf8;
+        --gray-light: #f5f5f0;
+        --gray: #888888;
+        --text: #2d2d2d;
+        --text-light: #666666;
+        --border: #e0e0d8;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+        color: var(--text);
+        background: var(--white);
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+
+    /* ═══════════════════════════════════════════
+       每页容器
+       ═══════════════════════════════════════════ */
+    .page {
+        width: 297mm;
+        height: 210mm;
+        page-break-after: always;
+        overflow: hidden;
+        position: relative;
+        background: var(--white);
+    }
+    /* 可跨页容器: 不限制高度，内容自然分页 */
+    .page-flow {
+        width: 297mm;
+        page-break-after: always;
+        background: var(--white);
+    }
+    .page-flow:last-child { page-break-after: auto; }
+    .page-cover { background: linear-gradient(135deg, #fafaf8 0%, var(--white) 60%, #f0efe8 100%); }
+    .page-overview { background: var(--white); }
+    .page-detail { background: var(--white); }
+    .page-comparison { background: var(--white); }
+    .page-notes { background: var(--white); }
+    .page:last-child { page-break-after: auto; }
+
+    /* ═══════════════════════════════════════════
+       通用排版
+       ═══════════════════════════════════════════ */
+    .section-title {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 22pt;
+        font-weight: 700;
+        color: var(--navy);
+        letter-spacing: 0.5pt;
+    }
+    .section-title-small {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 14pt;
+        color: var(--gold);
+        letter-spacing: 1pt;
+        text-transform: uppercase;
+    }
+    .gold-line {
+        width: 60pt;
+        height: 2pt;
+        background: var(--gold);
+        margin: 6pt auto;
+    }
+    .gold-line-center {
+        width: 60pt;
+        height: 2pt;
+        background: var(--gold);
+        margin: 6pt auto;
+    }
+
+    /* ═══════════════════════════════════════════
+       COVER PAGE - 封面
+       ═══════════════════════════════════════════ */
+    .cover-content {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 40pt 60pt;
+        text-align: center;
+    }
+    .cover-header {
+        max-width: 80%;
+    }
+    .cover-tagline {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 9pt;
+        letter-spacing: 3pt;
+        text-transform: uppercase;
+        color: var(--navy);
+        margin-bottom: 8pt;
+    }
+    .cover-title {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 36pt;
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.15;
+        margin-bottom: 4pt;
+    }
+    .cover-title-cn {
+        font-size: 18pt;
+        color: var(--gold);
+        letter-spacing: 1pt;
+        margin-bottom: 12pt;
+    }
+    .cover-subtitle {
+        font-size: 9pt;
+        color: var(--text-light);
+        margin-bottom: 12pt;
+        line-height: 1.5;
+    }
+    .cover-categories {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8pt;
+        margin-bottom: 20pt;
+    }
+    .cover-cat-tag {
+        font-size: 7.5pt;
+        color: var(--navy-light);
+        padding: 3pt 10pt;
+        border: 1px solid var(--gold);
+        border-radius: 20pt;
+        letter-spacing: 0.5pt;
+    }
+    .cover-footer {
+        position: absolute;
+        bottom: 28pt;
+        left: 50pt;
+        right: 50pt;
+        text-align: center;
+        font-size: 6.5pt;
+        color: var(--gray);
+        line-height: 1.4;
+        border-top: 1px solid var(--border);
+        padding-top: 8pt;
+    }
+
+    /* ═══════════════════════════════════════════
+       OVERVIEW PAGE - 产品总览
+       ═══════════════════════════════════════════ */
+    .overview-content {
+        padding: 28pt 40pt 20pt;
+    }
+    .overview-header {
+        margin-bottom: 6pt;
+    }
+    .overview-header .section-title { font-size: 20pt; }
+    .overview-desc {
+        font-size: 7.5pt;
+        color: var(--text-light);
+        margin-bottom: 14pt;
+        max-width: 70%;
+        line-height: 1.5;
+    }
+    .overview-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10pt;
+    }
+
+    /* 总览产品卡片 */
+    .ov-card {
+        display: flex;
+        gap: 10pt;
+        padding: 10pt;
+        background: var(--white);
+        border: 1px solid var(--border);
+        border-radius: 8pt;
+        box-shadow: 0 1pt 6pt rgba(0,0,0,0.04);
+        min-height: 100pt;
+        align-items: flex-start;
+    }
+    .ov-card-img {
+        width: 85pt;
+        height: 85pt;
+        border-radius: 4pt;
+        overflow: hidden;
+        background: var(--gray-light);
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .ov-card-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+    .ov-card-img .ov-img-placeholder {
+        font-size: 7pt;
+        color: var(--gray);
+    }
+    .ov-card-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 3pt;
+        min-width: 0;
+    }
+    .ov-card-name {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 10pt;
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.2;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .ov-card-desc {
+        font-size: 7pt;
+        color: var(--text-light);
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .ov-card-meta {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4pt;
+        margin-top: auto;
+    }
+    .ov-tag {
+        font-size: 6.5pt;
+        padding: 2pt 6pt;
+        border-radius: 3pt;
+        letter-spacing: 0.3pt;
+    }
+    .ov-tag-brand { background: rgba(26,39,68,0.08); color: var(--navy); }
+    .ov-tag-price { background: rgba(196,164,74,0.15); color: #8b6914; font-weight: 600; }
+    .ov-tag-cat { background: rgba(26,39,68,0.05); color: var(--text-light); }
+
+    /* ═══════════════════════════════════════════
+       DETAIL PAGE - 产品详情
+       ═══════════════════════════════════════════ */
+    .detail-content {
+        display: flex;
+        height: 100%;
+    }
+    .detail-left {
+        width: 42%;
+        background: var(--cream);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 25pt;
+        position: relative;
+    }
+    .detail-left .detail-img-wrap {
+        width: 260pt;
+        height: 260pt;
+        background: var(--white);
+        border-radius: 6pt;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 2pt 12pt rgba(0,0,0,0.06);
+    }
+    .detail-left img {
+        width: 90%;
+        height: 90%;
+        object-fit: contain;
+    }
+    .detail-left .detail-img-placeholder {
+        font-size: 9pt;
+        color: var(--gray);
+        text-align: center;
+    }
+    .detail-right {
+        width: 58%;
+        padding: 28pt 32pt 20pt 28pt;
+        display: flex;
+        flex-direction: column;
+        gap: 10pt;
+        overflow: hidden;
+    }
+    .detail-name {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 20pt;
+        font-weight: 700;
+        color: var(--navy);
+        line-height: 1.2;
+        margin-bottom: 2pt;
+    }
+    .detail-tagline {
+        font-size: 8.5pt;
+        color: var(--gold);
+        letter-spacing: 0.5pt;
+    }
+    .detail-desc {
+        font-size: 7.5pt;
+        color: var(--text-light);
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+    .detail-meta-row {
+        display: flex;
+        gap: 8pt;
+    }
+    .detail-meta-box {
+        flex: 1;
+        padding: 6pt 8pt;
+        background: var(--gray-light);
+        border-radius: 4pt;
+    }
+    .detail-meta-box-label {
+        font-size: 6pt;
+        text-transform: uppercase;
+        letter-spacing: 1pt;
+        color: var(--gray);
+        margin-bottom: 2pt;
+    }
+    .detail-meta-box-value {
+        font-size: 8pt;
+        font-weight: 600;
+        color: var(--navy);
+    }
+
+    /* 卖点区 */
+    .detail-sell-section {
+        flex: 1;
+        min-height: 0;
+    }
+    .detail-sell-title {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 10pt;
+        color: var(--navy);
+        margin-bottom: 4pt;
+        border-bottom: 1pt solid var(--gold);
+        padding-bottom: 3pt;
+    }
+    .detail-sell-list {
+        list-style: none;
+    }
+    .detail-sell-list li {
+        font-size: 7.5pt;
+        color: var(--text);
+        line-height: 1.5;
+        padding: 2pt 0 2pt 12pt;
+        position: relative;
+    }
+    .detail-sell-list li::before {
+        content: '';
+        position: absolute;
+        left: 0;
+        top: 7pt;
+        width: 4pt;
+        height: 4pt;
+        background: var(--gold);
+        border-radius: 50%;
+    }
+
+    /* 规格区 */
+    .detail-specs {
+        display: flex;
+        gap: 12pt;
+        font-size: 7pt;
+        color: var(--text-light);
+        border-top: 1px solid var(--border);
+        padding-top: 6pt;
+    }
+    .detail-spec-item {
+        display: flex;
+        flex-direction: column;
+    }
+    .detail-spec-label {
+        color: var(--gray);
+        font-size: 6pt;
+        text-transform: uppercase;
+        letter-spacing: 0.5pt;
+    }
+    .detail-spec-value {
+        color: var(--navy);
+        font-weight: 500;
+        font-size: 7.5pt;
+    }
+
+    /* 二维码 */
+    .detail-qr {
+        position: absolute;
+        bottom: 18pt;
+        right: 32pt;
+        text-align: center;
+        font-size: 5.5pt;
+        color: var(--gray);
+    }
+    .detail-qr img {
+        width: 45pt;
+        height: 45pt;
+        margin-bottom: 2pt;
+    }
+
+    /* ═══════════════════════════════════════════
+       COMPARISON TABLE - 对比表
+       ═══════════════════════════════════════════ */
+    .comparison-content {
+        padding: 28pt 30pt 20pt;
+    }
+    .comparison-header {
+        margin-bottom: 4pt;
+    }
+    .comparison-header .section-title { font-size: 20pt; }
+    .comparison-desc {
+        font-size: 7.5pt;
+        color: var(--text-light);
+        margin-bottom: 12pt;
+        line-height: 1.5;
+    }
+
+    .comp-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        font-size: 7pt;
+    }
+    .comp-table th {
+        background: var(--navy);
+        color: var(--white);
+        font-weight: 600;
+        padding: 6pt 8pt;
+        text-align: left;
+        font-size: 6.5pt;
+        letter-spacing: 0.5pt;
+        text-transform: uppercase;
+    }
+    .comp-table thead { display: table-header-group; }
+    .comp-table th:first-child { border-radius: 4pt 0 0 0; }
+    .comp-table th:last-child { border-radius: 0 4pt 0 0; }
+    .comp-table td {
+        padding: 5pt 8pt;
+        border-bottom: 1px solid var(--border);
+        color: var(--text);
+        vertical-align: top;
+        line-height: 1.3;
+    }
+    .comp-table tr:nth-child(even) td {
+        background: var(--gray-light);
+    }
+    .comp-table td:first-child {
+        font-weight: 600;
+        color: var(--navy);
+    }
+    .comp-notes {
+        margin-top: 14pt;
+        font-size: 6.5pt;
+        color: var(--gray);
+        line-height: 1.5;
+        border-top: 1px solid var(--border);
+        padding-top: 8pt;
+    }
+    .comp-notes strong { color: var(--text-light); }
+
+    /* ═══════════════════════════════════════════
+       NOTES PAGE - 备注页
+       ═══════════════════════════════════════════ */
+    .notes-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        padding: 40pt 60pt;
+    }
+    .notes-box {
+        max-width: 70%;
+        text-align: center;
+    }
+    .notes-box .section-title-small {
+        margin-bottom: 12pt;
+    }
+    .notes-text {
+        font-size: 8pt;
+        color: var(--text-light);
+        line-height: 1.7;
+    }
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 1: COVER - 封面
+     ═══════════════════════════════════════════ -->
+<div class="page page-cover">
+    <div class="cover-content">
+        <div class="cover-header">
+            <div class="cover-tagline">CLIENT PROMOTION CATALOG</div>
+            <div class="gold-line"></div>
+            <h1 class="cover-title">US Product<br>Catalog</h1>
+            <div class="cover-title-cn">Client Promotion Catalog</div>
+            <div class="gold-line"></div>
+
+            {% if categories %}
+            <div class="cover-categories">
+                {% for cat in categories[:6] %}
+                <span class="cover-cat-tag">{{ cat }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="cover-subtitle">
+                Based on the latest product data provided in the uploaded catalog sheet.<br>
+                {{ now.year }} Product Selection &bull; {{ products|length }} Products
+            </div>
+        </div>
+
+        <div class="cover-footer">
+            Prepared for customer outreach and product promotion. For claim-sensitive categories, final listing copy should be reviewed before use.
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGE 2: OVERVIEW - 产品总览
+     ═══════════════════════════════════════════ -->
+<div class="page-flow page-overview">
+    <div class="overview-content">
+        <div class="overview-header">
+            <div class="section-title-small">Product Overview</div>
+            <h2 class="section-title">Product Overview</h2>
+            <div class="gold-line"></div>
+        </div>
+        <p class="overview-desc">
+            A clean promotion-ready selection covering all product categories. Each product card includes selling direction, category and key commercial details.
+        </p>
+
+        <div class="overview-grid">
+            {% for p in products %}
+            <div class="ov-card">
+                <div class="ov-card-img">
+                    {% if p["Image URL"] %}
+                    <img src="{{ p['Image URL'] }}" alt="{{ p['Product Name'] }}">
+                    {% else %}
+                    <div class="ov-img-placeholder">No Image</div>
+                    {% endif %}
+                </div>
+                <div class="ov-card-info">
+                    <div class="ov-card-name">{{ p["Product Name"] }}</div>
+                    {% if p["Selling Point 1"] %}
+                    <div class="ov-card-desc">{{ p["Selling Point 1"] }}</div>
+                    {% elif p["Promotion Angle"] %}
+                    <div class="ov-card-desc">{{ p["Promotion Angle"] }}</div>
+                    {% endif %}
+                    <div class="ov-card-meta">
+                        {% if p["Brand"] %}<span class="ov-tag ov-tag-brand">{{ p["Brand"] }}</span>{% endif %}
+                        {% if p["Price"] %}<span class="ov-tag ov-tag-price">{{ p["Price"] }}</span>{% endif %}
+                        {% if p["Category"] %}<span class="ov-tag ov-tag-cat">{{ p["Category"] }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     PAGES 3+: DETAILS - 产品详情
+     ═══════════════════════════════════════════ -->
+{% for p in products %}
+<div class="page page-detail">
+    <div class="detail-content">
+        <!-- 左侧大图 -->
+        <div class="detail-left">
+            <div class="detail-img-wrap">
+                {% if p["Image URL"] %}
+                <img src="{{ p['Image URL'] }}" alt="{{ p['Product Name'] }}">
+                {% else %}
+                <div class="detail-img-placeholder">Product Image<br>Not Available</div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 右侧信息 -->
+        <div class="detail-right">
+            <div>
+                <h2 class="detail-name">{{ p["Product Name"] }}</h2>
+                {% if p["Promotion Angle"] %}
+                <div class="detail-tagline">{{ p["Promotion Angle"] }}</div>
+                {% endif %}
+                {% if p["Selling Point 1"] %}
+                <div class="detail-desc" style="margin-top:4pt;">{{ p["Selling Point 1"] }}</div>
+                {% endif %}
+            </div>
+
+            <!-- 品牌/价格/类目 -->
+            <div class="detail-meta-row">
+                <div class="detail-meta-box">
+                    <div class="detail-meta-box-label">Brand</div>
+                    <div class="detail-meta-box-value">{{ p["Brand"] or "—" }}</div>
+                </div>
+                <div class="detail-meta-box">
+                    <div class="detail-meta-box-label">Price</div>
+                    <div class="detail-meta-box-value">{{ p["Price"] or "—" }}</div>
+                </div>
+                <div class="detail-meta-box">
+                    <div class="detail-meta-box-label">Category</div>
+                    <div class="detail-meta-box-value">{{ p["Category"] or "—" }}</div>
+                </div>
+            </div>
+
+            <!-- 核心卖点 -->
+            {% if p["Selling Point 1"] or p["Selling Point 2"] or p["Selling Point 3"] %}
+            <div class="detail-sell-section">
+                <div class="detail-sell-title">Key Selling Points</div>
+                <ul class="detail-sell-list">
+                    {% if p["Selling Point 1"] %}<li>{{ p["Selling Point 1"] }}</li>{% endif %}
+                    {% if p["Selling Point 2"] %}<li>{{ p["Selling Point 2"] }}</li>{% endif %}
+                    {% if p["Selling Point 3"] %}<li>{{ p["Selling Point 3"] }}</li>{% endif %}
+                </ul>
+            </div>
+            {% endif %}
+
+            <!-- 产品规格 -->
+            <div class="detail-specs">
+                {% if p["Weight"] %}
+                <div class="detail-spec-item">
+                    <span class="detail-spec-label">Item Weight</span>
+                    <span class="detail-spec-value">{{ p["Weight"] }}</span>
+                </div>
+                {% endif %}
+                {% if p["Dimensions"] %}
+                <div class="detail-spec-item">
+                    <span class="detail-spec-label">Item Size</span>
+                    <span class="detail-spec-value">{{ p["Dimensions"] }}</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- 产品URL区域 -->
+            {% if p["Product URL"] %}
+            <div style="margin-top:4pt;">
+                <span style="font-size:6.5pt;color:var(--gray);text-transform:uppercase;letter-spacing:0.5pt;">Product Link</span>
+                <div style="font-size:6pt;color:var(--text-light);word-break:break-all;margin-top:1pt;">{{ p["Product URL"] }}</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- 二维码 (右下角) -->
+        {% if p["Product URL"] and qr_codes.get(loop.index0) %}
+        <div class="detail-qr">
+            <img src="data:image/png;base64,{{ qr_codes[loop.index0] }}" alt="QR">
+            <div>Scan for product link</div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endfor %}
+
+<!-- ═══════════════════════════════════════════
+     COMPARISON TABLE - 产品对比表
+     ═══════════════════════════════════════════ -->
+<div class="page-flow page-comparison">
+    <div class="comparison-content">
+        <div class="comparison-header">
+            <div class="section-title-small">Quick Comparison</div>
+            <h2 class="section-title">Product Comparison Table</h2>
+            <div class="gold-line"></div>
+        </div>
+        <p class="comparison-desc">A customer-friendly summary for quick product selection and follow-up discussions.</p>
+
+        <table class="comp-table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Brand</th>
+                    <th>Category</th>
+                    <th>Price</th>
+                    <th>Weight</th>
+                    <th>Dimensions</th>
+                    <th>Promotion Angle</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>{{ p["Product Name"] }}</td>
+                    <td>{{ p["Brand"] or "—" }}</td>
+                    <td>{{ p["Category"] or "—" }}</td>
+                    <td>{{ p["Price"] or "—" }}</td>
+                    <td>{{ p["Weight"] or "—" }}</td>
+                    <td>{{ p["Dimensions"] or "—" }}</td>
+                    <td>{{ p["Promotion Angle"] or "—" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div class="comp-notes">
+            <strong>Note:</strong>
+            Product images, pricing and product details are based on the uploaded spreadsheet. For supplements, skincare and OTC-related categories, final customer-facing claims should be checked against marketplace and local compliance requirements before publication.
+        </div>
+    </div>
+</div>
+
+<!-- ═══════════════════════════════════════════
+     NOTES PAGE - 备注页
+     ═══════════════════════════════════════════ -->
+<div class="page page-notes">
+    <div class="notes-content">
+        <div class="notes-box">
+            <div class="section-title-small">Notes &amp; Disclaimer</div>
+            <div class="gold-line-center"></div>
+            <div class="notes-text" style="margin-top:14pt;">
+                Product images, pricing and product details are based on the uploaded spreadsheet.<br>
+                For supplements, skincare and OTC-related categories, final customer-facing claims<br>
+                should be checked against marketplace and local compliance requirements before publication.
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>产品目录自动生成工具</title>
+    <style>
+        /* ═══════════ 全局 ═══════════ */
+        :root {
+            --bg-primary: #0c0c14;
+            --bg-secondary: #14142a;
+            --bg-card: #1a1a2e;
+            --bg-input: #1e1e36;
+            --border: #2a2a4a;
+            --text-primary: #e0e0e0;
+            --text-secondary: #8888aa;
+            --accent: #10b981;
+            --accent-hover: #059669;
+            --danger: #ef4444;
+            --navy-png: #1a2744;
+            --radius: 8px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        /* ═══════════ 头部 ═══════════ */
+        .header {
+            background: rgba(20, 20, 42, 0.9);
+            border-bottom: 1px solid var(--border);
+            padding: 1rem 2rem;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+        }
+
+        .header h1 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: var(--accent);
+            letter-spacing: 0.5px;
+        }
+
+        .header .subtitle {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        /* ═══════════ 主容器 ═══════════ */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* ═══════════ 上传区 ═══════════ */
+        .upload-zone {
+            background: var(--bg-card);
+            border: 2px dashed var(--border);
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            text-align: center;
+            transition: border-color 0.3s;
+            margin-bottom: 2rem;
+        }
+
+        .upload-zone:hover {
+            border-color: var(--accent);
+        }
+
+        .upload-zone form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .file-label {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            transition: all 0.2s;
+        }
+
+        .file-label:hover {
+            border-color: var(--accent);
+            color: var(--text-primary);
+        }
+
+        .file-name {
+            font-size: 0.8rem;
+            color: var(--accent);
+            max-width: 300px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        #file-input {
+            display: none;
+        }
+
+        .btn {
+            padding: 0.7rem 2rem;
+            border: none;
+            border-radius: var(--radius);
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            letter-spacing: 0.3px;
+        }
+
+        .btn-primary {
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: var(--accent-hover);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-outline:hover {
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .btn-outline:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* ═══════════ PDF 操作栏 ═══════════ */
+        .pdf-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .pdf-actions .pdf-label {
+            font-size: 0.78rem;
+            color: var(--text-secondary);
+            margin-right: auto;
+        }
+
+        .pdf-status {
+            font-size: 0.72rem;
+            color: var(--accent);
+            display: none;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        /* ═══════════ 错误/状态提示 ═══════════ */
+        .alert {
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .alert-error {
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #fca5a5;
+        }
+
+        .alert-info {
+            background: rgba(59, 130, 246, 0.15);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            color: #93c5fd;
+        }
+
+        /* ═══════════ 统计栏 ═══════════ */
+        .stats-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+            padding: 0.75rem 1rem;
+            background: var(--bg-card);
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+        }
+
+        .stats-bar .stats-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.8rem;
+        }
+
+        .stats-bar .stats-count {
+            color: var(--accent);
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .stats-bar .stats-filename {
+            color: var(--text-secondary);
+        }
+
+        .stats-bar .field-info {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        /* ═══════════ 产品网格 ═══════════ */
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.25rem;
+        }
+
+        /* ═══════════ 产品卡片 ═══════════ */
+        .product-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: transform 0.2s, border-color 0.2s;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .product-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent);
+        }
+
+        .product-image-wrapper {
+            width: 100%;
+            height: 220px;
+            background: #111122;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .product-image-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .product-image-wrapper .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+        }
+
+        .product-image-wrapper .placeholder svg {
+            opacity: 0.4;
+        }
+
+        .product-body {
+            padding: 1rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 0.6rem;
+        }
+
+        .product-name {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.3;
+            /* 最多两行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            align-items: center;
+            font-size: 0.75rem;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 0.2rem 0.55rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .tag-brand {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+        }
+
+        .tag-category {
+            background: rgba(139, 92, 246, 0.2);
+            color: #c4b5fd;
+        }
+
+        .tag-price {
+            background: rgba(16, 185, 129, 0.2);
+            color: #6ee7b7;
+            font-weight: 700;
+        }
+
+        .product-details {
+            font-size: 0.72rem;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 0.3rem;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .detail-label {
+            color: #666;
+        }
+
+        .product-promo {
+            font-size: 0.73rem;
+            color: #aaa;
+            border-top: 1px solid var(--border);
+            padding-top: 0.5rem;
+            margin-top: auto;
+            /* 最多三行 */
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .product-link {
+            font-size: 0.7rem;
+            color: var(--accent);
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .product-link:hover {
+            text-decoration: underline;
+        }
+
+        /* ═══════════ 空状态 ═══════════ */
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .empty-state p {
+            font-size: 0.85rem;
+        }
+
+        /* ═══════════ 加载动画 ═══════════ */
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top-color: #fff;
+            border-radius: 50%;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ═══════════ 滚动条 ═══════════ */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-primary);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        /* ═══════════ 响应式 ═══════════ */
+        @media (max-width: 768px) {
+            .container {
+                padding: 1rem;
+            }
+            .product-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-bar {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h1>产品目录自动生成工具</h1>
+    <div class="subtitle">上传 Excel → 自动解析 → 网页预览</div>
+</div>
+
+<div class="container">
+
+    <!-- 上传区 -->
+    <div class="upload-zone">
+        <form action="/upload" method="post" enctype="multipart/form-data" id="upload-form">
+            <label class="file-label" for="file-input">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span id="file-label-text">选择 Excel 文件 (.xlsx)</span>
+            </label>
+            <input type="file" id="file-input" name="file" accept=".xlsx,.xlsm" required>
+            <div id="file-name-display" class="file-name" style="display:none;"></div>
+            <button type="submit" class="btn btn-primary" id="submit-btn">
+                Generate Preview
+            </button>
+        </form>
+    </div>
+
+    <!-- 错误提示 -->
+    {% if error %}
+    <div class="alert alert-error">{{ error }}</div>
+    {% endif %}
+
+    <!-- 产品预览区 -->
+    {% if products %}
+    <div class="stats-bar">
+        <div class="stats-info">
+            <span>共 <span class="stats-count">{{ products|length }}</span> 个产品</span>
+            {% if filename %}
+            <span class="stats-filename">来源：{{ filename }}</span>
+            {% endif %}
+        </div>
+        <div class="field-info">已识别字段：Product Name / Brand / Price / Category / Weight / Dimensions / Selling Point 1-3 / Promotion Angle / Product URL / Image URL</div>
+    </div>
+
+    <!-- PDF 操作栏 -->
+    <div class="pdf-actions">
+        <span class="pdf-label">产品目录输出</span>
+        <button class="btn btn-outline" id="btn-preview" onclick="previewPDF()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+            View PDF
+        </button>
+        <button class="btn btn-primary" id="btn-download" onclick="downloadPDF()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+                <polyline points="7 10 12 15 17 10"/>
+                <line x1="12" y1="15" x2="12" y2="3"/>
+            </svg>
+            Download PDF
+        </button>
+        <button class="btn btn-primary" id="btn-png" onclick="downloadPNG()" style="background:#1a2744;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21 15 16 10 5 21"/>
+            </svg>
+            Download Overview PNG
+        </button>
+        <span class="pdf-status" id="pdf-status">
+            <span class="spinner"></span> 正在生成...
+        </span>
+    </div>
+
+    <div class="product-grid">
+        {% for p in products %}
+        <div class="product-card">
+            <!-- 产品图片 -->
+            <div class="product-image-wrapper">
+                {% if p["Image URL"] %}
+                <img src="{{ p["Image URL"] }}"
+                     alt="{{ p["Product Name"] }}"
+                     loading="lazy"
+                     onerror="this.parentElement.innerHTML='<div class=\'placeholder\'><svg width=\'40\' height=\'40\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'currentColor\' stroke-width=\'1.5\'><rect x=\'3\' y=\'3\' width=\'18\' height=\'18\' rx=\'2\'/><circle cx=\'8.5\' cy=\'8.5\' r=\'1.5\'/><polyline points=\'21 15 16 10 5 21\'/></svg><span>图片加载失败</span></div>'">
+                {% else %}
+                <div class="placeholder">
+                    <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <circle cx="8.5" cy="8.5" r="1.5"/>
+                        <polyline points="21 15 16 10 5 21"/>
+                    </svg>
+                    <span>暂无图片</span>
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- 产品信息 -->
+            <div class="product-body">
+                <div class="product-name">{{ p["Product Name"] or "—" }}</div>
+
+                <div class="product-meta">
+                    {% if p["Brand"] %}
+                    <span class="tag tag-brand">{{ p["Brand"] }}</span>
+                    {% endif %}
+                    {% if p["Category"] %}
+                    <span class="tag tag-category">{{ p["Category"] }}</span>
+                    {% endif %}
+                    {% if p["Price"] %}
+                    <span class="tag tag-price">{{ p["Price"] }}</span>
+                    {% endif %}
+                </div>
+
+                <div class="product-details">
+                    {% if p["Weight"] %}
+                    <div class="detail-row">
+                        <span class="detail-label">重量</span>
+                        <span>{{ p["Weight"] }}</span>
+                    </div>
+                    {% endif %}
+                    {% if p["Dimensions"] %}
+                    <div class="detail-row">
+                        <span class="detail-label">尺寸</span>
+                        <span>{{ p["Dimensions"] }}</span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                {% if p["Selling Point 1"] or p["Selling Point 2"] or p["Selling Point 3"] %}
+                <div class="product-details">
+                    {% for i in [1, 2, 3] %}
+                    {% set key = "Selling Point " ~ i %}
+                    {% if p[key] %}
+                    <div class="detail-row">
+                        <span class="detail-label">卖点 {{ i }}</span>
+                        <span>{{ p[key] }}</span>
+                    </div>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                {% if p["Promotion Angle"] %}
+                <div class="product-promo">
+                    <strong>推广方向：</strong>{{ p["Promotion Angle"] }}
+                </div>
+                {% endif %}
+
+                {% if p["Product URL"] %}
+                <a href="{{ p["Product URL"] }}" target="_blank" class="product-link" rel="noopener noreferrer">
+                    查看产品链接 →
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% elif not error %}
+    <!-- 初始空状态 -->
+    <div class="empty-state">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" opacity="0.3">
+            <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/>
+            <polyline points="17 8 12 3 7 8"/>
+            <line x1="12" y1="3" x2="12" y2="15"/>
+        </svg>
+        <p>请上传 Excel 文件，点击 Generate Preview 开始</p>
+        <p style="font-size:0.7rem;margin-top:0.5rem;">
+            Excel 表头需包含：Product Name, Brand, Price, Category, Image URL 等字段
+        </p>
+    </div>
+    {% endif %}
+
+</div>
+
+<!-- 文件选择交互 -->
+<script>
+    const fileInput = document.getElementById('file-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const fileLabelText = document.getElementById('file-label-text');
+    const submitBtn = document.getElementById('submit-btn');
+    const form = document.getElementById('upload-form');
+
+    fileInput.addEventListener('change', function() {
+        if (this.files.length > 0) {
+            const name = this.files[0].name;
+            fileNameDisplay.textContent = name;
+            fileNameDisplay.style.display = 'block';
+            fileLabelText.textContent = '重新选择文件';
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Generate Preview';
+        }
+    });
+
+    form.addEventListener('submit', function() {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner"></span> 解析中...';
+    });
+
+    /* PDF 操作 */
+    async function generatePDF(inline) {
+        const status = document.getElementById('pdf-status');
+        const btnPreview = document.getElementById('btn-preview');
+        const btnDownload = document.getElementById('btn-download');
+        if (btnPreview) { btnPreview.disabled = true; btnPreview.textContent = '生成中...'; }
+        if (btnDownload) { btnDownload.disabled = true; btnDownload.textContent = '生成中...'; }
+        if (status) status.style.display = 'inline-flex';
+
+        try {
+            const url = '/generate-pdf' + (inline ? '?inline=1' : '');
+            const resp = await fetch(url);
+            if (!resp.ok) {
+                const err = await resp.text();
+                alert('PDF 生成失败: ' + err);
+                return null;
+            }
+            return await resp.blob();
+        } catch (e) {
+            alert('PDF 生成失败: ' + e.message);
+            return null;
+        } finally {
+            if (status) status.style.display = 'none';
+            if (btnPreview) { btnPreview.disabled = false; btnPreview.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg> View PDF'; }
+            if (btnDownload) { btnDownload.disabled = false; btnDownload.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Download PDF'; }
+        }
+    }
+
+    async function previewPDF() {
+        const blob = await generatePDF(true);
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        window.open(url, '_blank');
+    }
+
+    async function downloadPDF() {
+        const blob = await generatePDF(false);
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'product_catalog.pdf';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+
+    async function downloadPNG() {
+        const status = document.getElementById('pdf-status');
+        const btnPNG = document.getElementById('btn-png');
+        if (btnPNG) { btnPNG.disabled = true; btnPNG.textContent = '生成中...'; }
+        if (status) status.style.display = 'inline-flex';
+        try {
+            const resp = await fetch('/generate-overview');
+            if (!resp.ok) {
+                const err = await resp.text();
+                alert('PNG 生成失败: ' + err);
+                return;
+            }
+            const blob = await resp.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'product_overview.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (e) {
+            alert('PNG 生成失败: ' + e.message);
+        } finally {
+            if (status) status.style.display = 'none';
+            if (btnPNG) { btnPNG.disabled = false; btnPNG.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align:middle;margin-right:4px;"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg> Download Overview PNG'; }
+        }
+    }
+</script>
+
+</body>
+</html>

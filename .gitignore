@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+*.pyc
+test_*.xlsx
+test_*.pdf
+test_*.png
+.env
+app/static/uploads/
+app/static/outputs/
