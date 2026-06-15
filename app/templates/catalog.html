@@ -261,6 +261,28 @@
     .ov-tag-price { background: rgba(196,164,74,0.15); color: #8b6914; font-weight: 600; }
     .ov-tag-cat { background: rgba(26,39,68,0.05); color: var(--text-light); }
 
+    /* 类目分组标题 */
+    .cat-group-header {
+        grid-column: 1 / -1;
+        padding: 10pt 0 4pt 0;
+        margin-top: 6pt;
+        border-bottom: 1px solid var(--gold);
+        opacity: 0.8;
+    }
+    .cat-group-header:first-child { margin-top: 0; }
+    .cat-group-title {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 10pt;
+        font-weight: 700;
+        color: var(--navy);
+        letter-spacing: 0.5pt;
+    }
+    .cat-group-count {
+        font-size: 7pt;
+        color: var(--gray);
+        margin-left: 6pt;
+    }
+
     /* ═══════════════════════════════════════════
        DETAIL PAGE - 产品详情
        ═══════════════════════════════════════════ */
@@ -558,6 +580,37 @@
         </p>
 
         <div class="overview-grid">
+            {% if grouped_products %}
+            {% for cat_name, cat_items in grouped_products %}
+            <div class="cat-group-header">
+                <span class="cat-group-title">{{ cat_name }}</span>
+                <span class="cat-group-count">{{ cat_items|length }} product{{ 's' if cat_items|length > 1 else '' }}</span>
+            </div>
+            {% for p in cat_items %}
+            <div class="ov-card">
+                <div class="ov-card-img">
+                    {% if p["Image URL"] %}
+                    <img src="{{ p['Image URL'] }}" alt="{{ p['Product Name'] }}">
+                    {% else %}
+                    <div class="ov-img-placeholder">No Image</div>
+                    {% endif %}
+                </div>
+                <div class="ov-card-info">
+                    <div class="ov-card-name">{{ p["Product Name"] }}</div>
+                    {% if p["Selling Point 1"] %}
+                    <div class="ov-card-desc">{{ p["Selling Point 1"] }}</div>
+                    {% elif p["Promotion Angle"] %}
+                    <div class="ov-card-desc">{{ p["Promotion Angle"] }}</div>
+                    {% endif %}
+                    <div class="ov-card-meta">
+                        {% if p["Brand"] %}<span class="ov-tag ov-tag-brand">{{ p["Brand"] }}</span>{% endif %}
+                        {% if p["Price"] %}<span class="ov-tag ov-tag-price">{{ p["Price"] }}</span>{% endif %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+            {% else %}
             {% for p in products %}
             <div class="ov-card">
                 <div class="ov-card-img">
@@ -577,11 +630,11 @@
                     <div class="ov-card-meta">
                         {% if p["Brand"] %}<span class="ov-tag ov-tag-brand">{{ p["Brand"] }}</span>{% endif %}
                         {% if p["Price"] %}<span class="ov-tag ov-tag-price">{{ p["Price"] }}</span>{% endif %}
-                        {% if p["Category"] %}<span class="ov-tag ov-tag-cat">{{ p["Category"] }}</span>{% endif %}
                     </div>
                 </div>
             </div>
             {% endfor %}
+            {% endif %}
         </div>
     </div>
 </div>

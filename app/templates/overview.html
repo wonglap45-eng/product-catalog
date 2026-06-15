@@ -208,6 +208,29 @@
         justify-self: center;
     }
 
+    /* ═══════════ Category Group Header ═══════════ */
+    .cat-group-header {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 14px 0 6px 0;
+        margin-top: 8px;
+    }
+    .cat-group-header:first-child { margin-top: 0; padding-top: 0; }
+    .cat-group-title {
+        font-family: 'Georgia', 'Times New Roman', serif;
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--navy);
+        letter-spacing: 0.5px;
+    }
+    .cat-group-line {
+        width: 30px;
+        height: 1px;
+        background: var(--gold);
+        margin: 5px auto 0;
+        opacity: 0.6;
+    }
+
     /* ═══════════ Footer ═══════════ */
     .footer {
         background: var(--navy);
@@ -252,6 +275,29 @@
         </div>
 
         <div class="product-grid {% if products|length <= 2 %}single-col{% endif %}">
+            {% if grouped_products %}
+            {% for cat_name, cat_items in grouped_products %}
+            <div class="cat-group-header">
+                <div class="cat-group-title">{{ cat_name }}</div>
+                <div class="cat-group-line"></div>
+            </div>
+            {% for p in cat_items %}
+            <div class="card">
+                <div class="card-image-area">
+                    {% if p["Image URL"] %}
+                    <img src="{{ p['Image URL'] }}" alt="{{ p['Product Name'] }}">
+                    {% else %}
+                    <div class="card-image-placeholder">Product Image</div>
+                    {% endif %}
+                </div>
+                <div class="card-name-area">
+                    <div class="card-name">{{ p["Product Name"] }}</div>
+                    <div class="card-name-divider"></div>
+                </div>
+            </div>
+            {% endfor %}
+            {% endfor %}
+            {% else %}
             {% for p in products %}
             {% set is_last_odd = (products|length % 2 == 1) and loop.last %}
             <div class="card {% if is_last_odd %}last-odd{% endif %}">
@@ -268,6 +314,7 @@
                 </div>
             </div>
             {% endfor %}
+            {% endif %}
         </div>
     </div>
 

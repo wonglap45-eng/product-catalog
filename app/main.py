@@ -96,6 +96,23 @@ def _timestamp() -> str:
 
 
 # ═══════════════════════════════════════════════════════════════
+#  类目分组
+# ═══════════════════════════════════════════════════════════════
+
+def group_by_category(products: list[dict]) -> list[tuple[str, list[dict]]]:
+    """按 Category 字段分组，保持原始出现顺序。空类目归入 'Other'。"""
+    groups: dict[str, list[dict]] = {}
+    order: list[str] = []
+    for p in products:
+        cat = p.get("Category", "").strip() or "Other"
+        if cat not in groups:
+            groups[cat] = []
+            order.append(cat)
+        groups[cat].append(p)
+    return [(cat, groups[cat]) for cat in order]
+
+
+# ═══════════════════════════════════════════════════════════════
 #  Excel 解析
 # ═══════════════════════════════════════════════════════════════
 
@@ -225,10 +242,12 @@ async def render_pdf(products: list[dict], qr_codes: dict[int, str]) -> bytes:
     categories = list(dict.fromkeys(
         p.get("Category", "") for p in products if p.get("Category", "")
     ))[:6]
+    grouped = group_by_category(products)
 
     html_content = templates.get_template("catalog.html").render(
         request=None,
         products=products,
+        grouped_products=grouped,
         qr_codes=qr_codes,
         categories=categories,
         now=datetime.now(),
@@ -259,9 +278,11 @@ async def render_pdf(products: list[dict], qr_codes: dict[int, str]) -> bytes:
 
 async def render_overview_png(products: list[dict]) -> bytes:
     """Jinja2 渲染 overview.html → Playwright Chromium 全页截图 PNG"""
+    grouped = group_by_category(products)
     html_content = templates.get_template("overview.html").render(
         request=None,
         products=products,
+        grouped_products=grouped,
     )
 
     async with async_playwright() as pw:
