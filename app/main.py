@@ -50,6 +50,7 @@ TARGET_FIELDS = [
     "Promotion Angle",
     "Product URL",
     "Image URL",
+    "Category Path",
 ]
 
 # 中文 → 英文 字段名映射（同时支持中英文表头）
@@ -75,6 +76,7 @@ FIELD_ALIAS_MAP: dict[str, str] = {
     "推广角度": "Promotion Angle",
     # 覆盖列（如果英文名和中文表头都不匹配）
     "详细参数": "_specs",
+    "类目路径": "Category Path",
 }
 
 # 需要忽略的列（序号之类的）
