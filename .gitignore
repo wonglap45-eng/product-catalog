@@ -7,3 +7,7 @@ test_*.png
 .env
 app/static/uploads/
 app/static/outputs/
+USER_MANUAL.md
+USER_MANUAL.pdf
+manual_cn.html
+manual_template.html

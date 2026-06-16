@@ -5,298 +5,177 @@
 <style>
     @page { size: A4 landscape; margin: 0; }
     :root {
-        --navy: #1a2744;
-        --navy-light: #2a3f5f;
-        --gold: #c4a44a;
-        --white: #ffffff;
-        --cream: #fafaf8;
-        --gray-light: #f5f5f0;
-        --gray: #999;
-        --text: #2d2d2d;
-        --text-light: #666;
-        --border: #e0e0d8;
+        --navy: #1a2744; --navy-light: #2a3f5f; --gold: #c4a44a;
+        --white: #fff; --cream: #fafaf8; --gray-light: #f5f5f0;
+        --gray: #999; --text: #2d2d2d; --text-light: #666; --border: #e0e0d8;
         --brand-bar-h: 24pt;
     }
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Helvetica Neue', sans-serif;
-        color: var(--text);
-        background: var(--white);
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
+        font-family: -apple-system, 'Segoe UI', 'Helvetica Neue', sans-serif;
+        color: var(--text); background: var(--white);
+        -webkit-print-color-adjust: exact; print-color-adjust: exact;
     }
-
-    /* ═══════════ Page Containers ═══════════ */
+    /* ═══ Page Containers ═══ */
     .page {
-        width: 297mm;
-        height: 210mm;
-        page-break-after: always;
-        overflow: hidden;
-        position: relative;
-        background: var(--white);
+        width: 297mm; height: 210mm; page-break-after: always;
+        overflow: hidden; position: relative; background: var(--white);
     }
     .page-flow {
-        width: 297mm;
-        page-break-after: always;
-        background: var(--white);
+        width: 297mm; page-break-after: always; background: var(--white);
     }
     .page-flow:last-child { page-break-after: auto; }
     .page:last-child { page-break-after: auto; }
-    .page-cover { background: var(--navy); }
+    .page-cover { background: linear-gradient(135deg, #fafaf8 0%, var(--white) 60%, #f0efe8 100%); }
+    .page-cat-cover { background: var(--navy); }
     .page-toc { background: var(--white); }
     .page-overview { background: var(--white); }
     .page-detail { background: var(--white); }
     .page-comparison { background: var(--white); }
     .page-notes { background: var(--white); }
 
-    /* ═══════════ Brand Footer Bar ═══════════ */
+    /* ═══ Brand Bar ═══ */
     .brand-bar {
-        position: absolute;
-        bottom: 0; left: 0; right: 0;
-        height: var(--brand-bar-h);
-        background: var(--navy);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 6pt;
-        color: rgba(255,255,255,0.5);
-        letter-spacing: 1.5pt;
-        text-transform: uppercase;
+        position: absolute; bottom: 0; left: 0; right: 0;
+        height: var(--brand-bar-h); background: var(--navy);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 6pt; color: rgba(255,255,255,0.5);
+        letter-spacing: 1.5pt; text-transform: uppercase;
     }
-    .brand-bar .dot {
-        color: var(--gold);
-        margin: 0 8pt;
-    }
+    .brand-bar .dot { color: var(--gold); margin: 0 8pt; }
     .with-brand-bar { padding-bottom: var(--brand-bar-h); }
 
-    /* ═══════════ Typography ═══════════ */
+    /* ═══ Typography ═══ */
     .section-title {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 22pt;
-        font-weight: 700;
-        color: var(--navy);
-        letter-spacing: 0.5pt;
+        font-family: 'Georgia', serif; font-size: 22pt; font-weight: 700;
+        color: var(--navy); letter-spacing: 0.5pt;
     }
     .section-title-small {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 12pt;
-        color: var(--gold);
-        letter-spacing: 2pt;
-        text-transform: uppercase;
+        font-family: 'Georgia', serif; font-size: 12pt;
+        color: var(--gold); letter-spacing: 2pt; text-transform: uppercase;
     }
-    .gold-line {
-        width: 50pt;
-        height: 2pt;
-        background: var(--gold);
-        margin: 6pt auto;
-    }
+    .gold-line { width: 50pt; height: 2pt; background: var(--gold); margin: 6pt auto; }
 
-    /* ═══════════ COVER — split screen ═══════════ */
-    .cover-wrap { display: flex; height: 100%; }
-    .cover-left {
-        width: 52%;
-        background: linear-gradient(160deg, #0f1a2e 0%, #1a2744 50%, #1e3558 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: relative;
-        overflow: hidden;
-    }
-    .cover-left::before {
-        content: '';
-        position: absolute;
-        top: -20%; right: -10%;
-        width: 70%;
-        height: 140%;
-        background: radial-gradient(circle at center, rgba(196,164,74,0.08) 0%, transparent 70%);
-    }
-    .cover-left::after {
-        content: '';
-        position: absolute;
-        bottom: 10%; left: 15%;
-        width: 200pt;
-        height: 200pt;
-        border: 1pt solid rgba(196,164,74,0.15);
-        border-radius: 50%;
-    }
-    .cover-left-inner {
-        text-align: center;
-        color: var(--white);
-        position: relative;
-        z-index: 1;
+    /* ═══ COVER — simple centered ═══ */
+    .cover-content {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        padding: 40pt 60pt; text-align: center;
     }
     .cover-tagline {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 9pt;
-        letter-spacing: 4pt;
-        text-transform: uppercase;
-        color: var(--gold);
-        margin-bottom: 14pt;
+        font-family: 'Georgia', serif; font-size: 10pt;
+        letter-spacing: 4pt; text-transform: uppercase; color: var(--navy); margin-bottom: 12pt;
     }
     .cover-title {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 34pt;
-        font-weight: 700;
-        line-height: 1.15;
-        margin-bottom: 6pt;
+        font-family: 'Georgia', serif; font-size: 36pt; font-weight: 700;
+        color: var(--navy); line-height: 1.15; margin-bottom: 4pt;
     }
     .cover-sub {
-        font-size: 10pt;
-        color: rgba(255,255,255,0.5);
-        letter-spacing: 1pt;
+        font-size: 16pt; color: var(--gold); letter-spacing: 1pt; margin-bottom: 12pt;
     }
-    .cover-gold { width: 40pt; height: 2pt; background: var(--gold); margin: 10pt auto; }
-
-    .cover-right {
-        width: 48%;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-        background: var(--white);
-        padding: 40pt;
-    }
-    .cover-right-label {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 7pt;
-        letter-spacing: 2pt;
-        text-transform: uppercase;
-        color: var(--gray);
-        margin-bottom: 16pt;
-    }
-    .cover-cat-list {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8pt;
-        margin-bottom: 20pt;
+    .cover-categories {
+        display: flex; flex-wrap: wrap; justify-content: center; gap: 8pt; margin-bottom: 20pt;
     }
     .cover-cat-tag {
-        font-size: 7pt;
-        color: var(--navy-light);
-        padding: 4pt 12pt;
-        border: 1px solid var(--gold);
-        border-radius: 20pt;
-        letter-spacing: 0.5pt;
+        font-size: 7.5pt; color: var(--navy-light); padding: 3pt 10pt;
+        border: 1px solid var(--gold); border-radius: 20pt; letter-spacing: 0.5pt;
     }
-    .cover-images {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8pt;
-        margin-bottom: 16pt;
+    .cover-subtitle {
+        font-size: 9pt; color: var(--text-light); margin-bottom: 12pt; line-height: 1.5;
     }
-    .cover-thumb {
-        width: 85pt; height: 85pt;
-        border-radius: 6pt;
-        overflow: hidden;
-        background: var(--gray-light);
-        box-shadow: 0 2pt 6pt rgba(0,0,0,0.05);
-    }
-    .cover-thumb img { width: 100%; height: 100%; object-fit: contain; padding: 4pt; }
-    .cover-thumb.placeholder {
-        display: flex; align-items: center; justify-content: center;
-        font-size: 6pt; color: var(--gray);
-    }
-    .cover-meta {
-        font-size: 7pt;
-        color: var(--gray);
-        text-align: center;
-        line-height: 1.6;
-    }
-    .cover-footer-text {
-        font-size: 6pt;
-        color: var(--gray);
-        text-align: center;
-        border-top: 1px solid var(--border);
-        padding-top: 8pt;
-        margin-top: 16pt;
+    .cover-footer {
+        position: absolute; bottom: 28pt; left: 50pt; right: 50pt;
+        text-align: center; font-size: 6.5pt; color: var(--gray);
+        line-height: 1.4; border-top: 1px solid var(--border); padding-top: 8pt;
     }
 
-    /* ═══════════ TABLE OF CONTENTS ═══════════ */
+    /* ═══ CATEGORY COVER ═══ */
+    .cat-cover-content {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        display: flex; flex-direction: column; align-items: center; justify-content: center;
+        text-align: center; color: var(--white); padding: 40pt 60pt;
+    }
+    .cat-cover-content::before {
+        content: ''; position: absolute; top: -20%; right: -10%;
+        width: 70%; height: 140%;
+        background: radial-gradient(circle at center, rgba(196,164,74,0.06) 0%, transparent 70%);
+    }
+    .cat-cover-tag {
+        font-family: 'Georgia', serif; font-size: 9pt;
+        letter-spacing: 4pt; text-transform: uppercase; color: var(--gold);
+        margin-bottom: 10pt; position: relative; z-index: 1;
+    }
+    .cat-cover-name {
+        font-family: 'Georgia', serif; font-size: 28pt; font-weight: 700;
+        line-height: 1.2; position: relative; z-index: 1; margin-bottom: 10pt;
+    }
+    .cat-cover-line {
+        width: 40pt; height: 2pt; background: var(--gold);
+        margin: 0 auto 12pt; position: relative; z-index: 1;
+    }
+    .cat-cover-count {
+        font-size: 10pt; color: rgba(255,255,255,0.5);
+        position: relative; z-index: 1;
+    }
+    .cat-cover-img {
+        width: 100pt; height: 100pt; border-radius: 50%;
+        background: rgba(255,255,255,0.08); overflow: hidden;
+        margin: 0 auto 16pt; position: relative; z-index: 1;
+        display: flex; align-items: center; justify-content: center;
+    }
+    .cat-cover-img img {
+        width: 80%; height: 80%; object-fit: contain;
+        filter: brightness(1.1);
+    }
+
+    /* ═══ TOC ═══ */
     .toc-content {
-        padding: 30pt 45pt 20pt;
-        height: 100%;
-        display: flex;
-        flex-direction: column;
+        padding: 30pt 45pt 20pt; height: 100%;
+        display: flex; flex-direction: column;
     }
     .toc-header { margin-bottom: 16pt; text-align: left; }
     .toc-header .gold-line { margin: 6pt 0; }
     .toc-groups { flex: 1; overflow: hidden; }
     .toc-group { margin-bottom: 12pt; }
     .toc-cat-name {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 11pt;
-        font-weight: 700;
-        color: var(--navy);
-        padding-bottom: 3pt;
-        border-bottom: 1pt solid var(--gold);
-        margin-bottom: 5pt;
-        display: inline-block;
+        font-family: 'Georgia', serif; font-size: 11pt; font-weight: 700;
+        color: var(--navy); padding-bottom: 3pt;
+        border-bottom: 1pt solid var(--gold); margin-bottom: 5pt; display: inline-block;
     }
-    .toc-products {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 2pt 16pt;
-    }
+    .toc-products { display: grid; grid-template-columns: 1fr 1fr; gap: 2pt 16pt; }
     .toc-product {
-        font-size: 7.5pt;
-        color: var(--text-light);
-        line-height: 1.5;
-        display: -webkit-box;
-        -webkit-line-clamp: 1;
-        -webkit-box-orient: vertical;
-        overflow: hidden;
-        padding-left: 8pt;
-        position: relative;
+        font-size: 7.5pt; color: var(--text-light); line-height: 1.5;
+        display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical;
+        overflow: hidden; padding-left: 8pt; position: relative;
     }
     .toc-product::before {
-        content: '\2014';
-        position: absolute;
-        left: 0;
-        color: var(--gold);
-        font-size: 6pt;
+        content: '\2014'; position: absolute; left: 0; color: var(--gold); font-size: 6pt;
     }
 
-    /* ═══════════ OVERVIEW CARDS ═══════════ */
+    /* ═══ OVERVIEW ═══ */
     .overview-content { padding: 24pt 36pt 16pt; }
     .overview-header { margin-bottom: 4pt; text-align: left; }
     .overview-header .gold-line { margin: 6pt 0; }
     .overview-header .section-title { font-size: 20pt; }
-    .overview-desc {
-        font-size: 7pt;
-        color: var(--text-light);
-        margin-bottom: 10pt;
-        line-height: 1.5;
-    }
+    .overview-desc { font-size: 7pt; color: var(--text-light); margin-bottom: 10pt; }
     .overview-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8pt; }
     .ov-card {
-        display: flex;
-        gap: 8pt;
-        padding: 8pt;
-        background: var(--white);
-        border: 1px solid var(--border);
-        border-radius: 6pt;
-        box-shadow: 0 1pt 4pt rgba(0,0,0,0.04);
-        align-items: flex-start;
+        display: flex; gap: 8pt; padding: 8pt; background: var(--white);
+        border: 1px solid var(--border); border-radius: 6pt;
+        box-shadow: 0 1pt 4pt rgba(0,0,0,0.04); align-items: flex-start;
     }
     .ov-card-img {
-        width: 72pt; height: 72pt;
-        border-radius: 3pt;
-        background: var(--gray-light);
-        flex-shrink: 0;
-        display: flex; align-items: center; justify-content: center;
-        overflow: hidden;
+        width: 72pt; height: 72pt; border-radius: 3pt;
+        background: var(--gray-light); flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; overflow: hidden;
     }
     .ov-card-img img { width: 100%; height: 100%; object-fit: contain; }
     .ov-img-placeholder { font-size: 6pt; color: var(--gray); }
     .ov-card-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2pt; }
     .ov-card-name {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 9pt; font-weight: 700; color: var(--navy);
-        line-height: 1.2;
-        display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+        font-family: 'Georgia', serif; font-size: 9pt; font-weight: 700; color: var(--navy);
+        line-height: 1.2; display: -webkit-box; -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical; overflow: hidden;
     }
     .ov-card-desc {
         font-size: 6.5pt; color: var(--text-light); line-height: 1.3;
@@ -308,60 +187,46 @@
     .ov-tag-price { background: rgba(196,164,74,0.12); color: #8b6914; font-weight: 600; }
 
     .cat-group-header {
-        grid-column: 1 / -1;
-        padding: 8pt 0 2pt 0; margin-top: 4pt;
+        grid-column: 1 / -1; padding: 8pt 0 2pt 0; margin-top: 4pt;
         border-bottom: 1px solid rgba(196,164,74,0.4);
+        break-after: avoid; page-break-after: avoid;
     }
     .cat-group-header:first-child { margin-top: 0; }
     .cat-group-title {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 9pt; font-weight: 700; color: var(--navy);
+        font-family: 'Georgia', serif; font-size: 9pt; font-weight: 700; color: var(--navy);
     }
     .cat-group-count { font-size: 6.5pt; color: var(--gray); margin-left: 4pt; }
 
-    /* ═══════════ DETAIL PAGE ═══════════ */
+    /* ═══ DETAIL ═══ */
     .detail-content { display: flex; height: calc(100% - var(--brand-bar-h)); }
     .detail-left {
-        width: 44%;
-        background: var(--cream);
-        display: flex; align-items: center; justify-content: center;
-        padding: 20pt;
+        width: 44%; background: var(--cream);
+        display: flex; align-items: center; justify-content: center; padding: 20pt;
     }
     .detail-img-wrap {
-        width: 240pt; height: 240pt;
-        background: var(--white);
-        border-radius: 6pt;
+        width: 240pt; height: 240pt; background: var(--white); border-radius: 6pt;
         display: flex; align-items: center; justify-content: center;
-        box-shadow: 0 2pt 12pt rgba(0,0,0,0.06);
-        overflow: hidden;
+        box-shadow: 0 2pt 12pt rgba(0,0,0,0.06); overflow: hidden;
     }
     .detail-img-wrap img { width: 90%; height: 90%; object-fit: contain; }
     .detail-img-placeholder { font-size: 8pt; color: var(--gray); text-align: center; }
-
     .detail-right {
-        width: 56%;
-        padding: 20pt 24pt 12pt 20pt;
-        display: flex; flex-direction: column; gap: 8pt;
-        overflow: hidden;
+        width: 56%; padding: 20pt 24pt 12pt 20pt;
+        display: flex; flex-direction: column; gap: 8pt; overflow: hidden;
     }
     .detail-name {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 18pt; font-weight: 700; color: var(--navy);
-        line-height: 1.15;
-        display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+        font-family: 'Georgia', serif; font-size: 18pt; font-weight: 700; color: var(--navy);
+        line-height: 1.15; display: -webkit-box; -webkit-line-clamp: 3;
+        -webkit-box-orient: vertical; overflow: hidden;
     }
     .detail-name-long { font-size: 14pt; }
-    .detail-tagline {
-        font-size: 8pt; color: var(--gold); letter-spacing: 0.5pt;
-    }
+    .detail-tagline { font-size: 8pt; color: var(--gold); letter-spacing: 0.5pt; }
     .detail-desc {
         font-size: 7.5pt; color: var(--text-light); line-height: 1.5;
         display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
     }
     .detail-meta-row { display: flex; gap: 6pt; }
-    .detail-meta-box {
-        flex: 1; padding: 5pt 7pt; border-radius: 4pt;
-    }
+    .detail-meta-box { flex: 1; padding: 5pt 7pt; border-radius: 4pt; }
     .detail-meta-box-brand { background: rgba(26,39,68,0.06); }
     .detail-meta-box-price { background: rgba(196,164,74,0.10); }
     .detail-meta-box-cat   { background: rgba(26,39,68,0.03); }
@@ -369,57 +234,46 @@
         font-size: 5.5pt; text-transform: uppercase; letter-spacing: 1pt;
         color: var(--gray); margin-bottom: 1pt;
     }
-    .detail-meta-box-value {
-        font-size: 8pt; font-weight: 600; color: var(--navy);
-    }
-
+    .detail-meta-box-value { font-size: 8pt; font-weight: 600; color: var(--navy); }
     .detail-sell-section { flex: 1; min-height: 0; }
     .detail-sell-title {
-        font-family: 'Georgia', 'Times New Roman', serif;
-        font-size: 11pt; color: var(--navy);
-        margin-bottom: 4pt;
-        border-bottom: 1pt solid var(--gold);
-        padding-bottom: 3pt;
+        font-family: 'Georgia', serif; font-size: 11pt; color: var(--navy);
+        margin-bottom: 4pt; border-bottom: 1pt solid var(--gold); padding-bottom: 3pt;
     }
     .detail-sell-list { list-style: none; }
     .detail-sell-list li {
-        font-size: 8pt; color: var(--text);
-        line-height: 1.45; padding: 2.5pt 0 2.5pt 12pt; position: relative;
+        font-size: 8pt; color: var(--text); line-height: 1.45;
+        padding: 2.5pt 0 2.5pt 12pt; position: relative;
     }
     .detail-sell-list li::before {
         content: ''; position: absolute; left: 0; top: 8pt;
         width: 4pt; height: 4pt; background: var(--gold); border-radius: 50%;
     }
-
     .detail-specs {
-        display: flex; gap: 12pt;
-        font-size: 7pt; color: var(--text-light);
+        display: flex; gap: 12pt; font-size: 7pt; color: var(--text-light);
         border-top: 1px solid var(--border); padding-top: 5pt;
     }
     .detail-spec-item { display: flex; flex-direction: column; }
     .detail-spec-label { color: var(--gray); font-size: 6pt; text-transform: uppercase; letter-spacing: 0.5pt; }
     .detail-spec-value { color: var(--navy); font-weight: 500; font-size: 7.5pt; }
-
     .detail-qr {
         position: absolute; bottom: calc(var(--brand-bar-h) + 12pt); right: 24pt;
         text-align: center; font-size: 5pt; color: var(--gray);
     }
     .detail-qr img { width: 42pt; height: 42pt; margin-bottom: 2pt; }
 
-    /* ═══════════ COMPARISON TABLE ═══════════ */
+    /* ═══ COMPARISON ═══ */
     .comparison-content { padding: 24pt 28pt 16pt; }
     .comparison-header { margin-bottom: 4pt; }
     .comparison-header .gold-line { margin: 6pt 0; }
     .comparison-header .section-title { font-size: 20pt; }
     .comparison-desc { font-size: 7.5pt; color: var(--text-light); margin-bottom: 10pt; }
-    .comp-table {
-        width: 100%; border-collapse: separate; border-spacing: 0; font-size: 7pt;
-    }
+    .comp-table { width: 100%; border-collapse: separate; border-spacing: 0; font-size: 7pt; }
     .comp-table thead { display: table-header-group; }
     .comp-table th {
-        background: var(--navy); color: var(--white);
-        font-weight: 600; padding: 6pt 7pt; text-align: left;
-        font-size: 6pt; letter-spacing: 0.8pt; text-transform: uppercase;
+        background: var(--navy); color: var(--white); font-weight: 600;
+        padding: 6pt 7pt; text-align: left; font-size: 6pt;
+        letter-spacing: 0.8pt; text-transform: uppercase;
     }
     .comp-table th:first-child { border-radius: 4pt 0 0 0; }
     .comp-table th:last-child  { border-radius: 0 4pt 0 0; }
@@ -429,16 +283,14 @@
     }
     .comp-table tr:nth-child(even) td { background: #f7f8fa; }
     .comp-table tr:nth-child(odd)  td { background: var(--white); }
-    .comp-table td:first-child {
-        font-weight: 700; color: var(--navy);
-    }
+    .comp-table td:first-child { font-weight: 700; color: var(--navy); }
     .comp-notes {
         margin-top: 10pt; font-size: 6pt; color: var(--gray);
         line-height: 1.5; border-top: 1px solid var(--border); padding-top: 6pt;
     }
     .comp-notes strong { color: var(--text-light); }
 
-    /* ═══════════ NOTES PAGE ═══════════ */
+    /* ═══ NOTES ═══ */
     .notes-content {
         display: flex; align-items: center; justify-content: center;
         height: calc(100% - var(--brand-bar-h)); padding: 40pt 60pt;
@@ -449,46 +301,32 @@
 </head>
 <body>
 
-<!-- ═══════════ COVER ═══════════ -->
+<!-- ═════ COVER ═════ -->
 <div class="page page-cover">
-    <div class="cover-wrap">
-        <div class="cover-left">
-            <div class="cover-left-inner">
-                <div class="cover-tagline">CLIENT PROMOTION CATALOG</div>
-                <div class="cover-title">US Product<br>Catalog</div>
-                <div class="cover-gold"></div>
-                <div class="cover-sub">Client Promotion Catalog</div>
-            </div>
+    <div class="cover-content">
+        <div class="cover-tagline">CLIENT PROMOTION CATALOG</div>
+        <div class="gold-line"></div>
+        <h1 class="cover-title">US Product<br>Catalog</h1>
+        <div class="cover-sub">Client Promotion Catalog</div>
+        <div class="gold-line"></div>
+        {% if categories %}
+        <div class="cover-categories">
+            {% for cat in categories[:6] %}
+            <span class="cover-cat-tag">{{ cat }}</span>
+            {% endfor %}
         </div>
-        <div class="cover-right">
-            <div class="cover-right-label">Product Categories</div>
-            <div class="cover-images">
-                {% for p in products[:4] %}
-                <div class="cover-thumb {% if not p['Image URL'] %}placeholder{% endif %}">
-                    {% if p["Image URL"] %}
-                    <img src="{{ p['Image URL'] }}" alt="">
-                    {% else %}
-                    <span>No Image</span>
-                    {% endif %}
-                </div>
-                {% endfor %}
-            </div>
-            <div class="cover-cat-list">
-                {% for cat in categories[:6] %}
-                <span class="cover-cat-tag">{{ cat }}</span>
-                {% endfor %}
-            </div>
-            <div class="cover-meta">
-                {{ now.year }} Product Selection &bull; {{ products|length }} Products
-            </div>
-            <div class="cover-footer-text">
-                Prepared for customer outreach and product promotion.
-            </div>
+        {% endif %}
+        <div class="cover-subtitle">
+            Based on the latest product data provided in the uploaded catalog sheet.<br>
+            {{ now.year }} Product Selection &bull; {{ products|length }} Products
+        </div>
+        <div class="cover-footer">
+            Prepared for customer outreach and product promotion. For claim-sensitive categories, final listing copy should be reviewed before use.
         </div>
     </div>
 </div>
 
-<!-- ═══════════ TABLE OF CONTENTS ═══════════ -->
+<!-- ═════ TOC ═════ -->
 <div class="page page-toc">
     <div class="toc-content with-brand-bar">
         <div class="toc-header">
@@ -511,12 +349,10 @@
         {% endif %}
         </div>
     </div>
-    <div class="brand-bar">
-        Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}
-    </div>
+    <div class="brand-bar">Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}</div>
 </div>
 
-<!-- ═══════════ OVERVIEW ═══════════ -->
+<!-- ═════ OVERVIEW ═════ -->
 <div class="page-flow page-overview">
     <div class="overview-content">
         <div class="overview-header">
@@ -524,9 +360,7 @@
             <h2 class="section-title">Product Overview</h2>
             <div class="gold-line" style="margin:6pt 0;"></div>
         </div>
-        <p class="overview-desc">
-            A clean promotion-ready selection covering all product categories.
-        </p>
+        <p class="overview-desc">A clean promotion-ready selection covering all product categories.</p>
         <div class="overview-grid">
             {% if grouped_products %}
             {% for cat_name, cat_items in grouped_products %}
@@ -537,17 +371,12 @@
             {% for p in cat_items %}
             <div class="ov-card">
                 <div class="ov-card-img">
-                    {% if p["Image URL"] %}
-                    <img src="{{ p['Image URL'] }}" alt="">
-                    {% else %}
-                    <div class="ov-img-placeholder">No Image</div>
-                    {% endif %}
+                    {% if p["Image URL"] %}<img src="{{ p['Image URL'] }}" alt="">
+                    {% else %}<div class="ov-img-placeholder">No Image</div>{% endif %}
                 </div>
                 <div class="ov-card-info">
                     <div class="ov-card-name">{{ p["Product Name"] }}</div>
-                    {% if p["Selling Point 1"] %}
-                    <div class="ov-card-desc">{{ p["Selling Point 1"] }}</div>
-                    {% endif %}
+                    {% if p["Selling Point 1"] %}<div class="ov-card-desc">{{ p["Selling Point 1"] }}</div>{% endif %}
                     <div class="ov-card-meta">
                         {% if p["Brand"] %}<span class="ov-tag ov-tag-brand">{{ p["Brand"] }}</span>{% endif %}
                         {% if p["Price"] %}<span class="ov-tag ov-tag-price">{{ p["Price"] }}</span>{% endif %}
@@ -578,8 +407,21 @@
     </div>
 </div>
 
-<!-- ═══════════ DETAILS ═══════════ -->
-{% for p in products %}
+<!-- ═════ DETAILS (grouped by category with cover pages) ═════ -->
+{% set global_idx = namespace(value=0) %}
+{% if grouped_products %}
+{% for cat_name, cat_items in grouped_products %}
+<!-- Category Cover Page -->
+<div class="page page-cat-cover">
+    <div class="cat-cover-content">
+        <div class="cat-cover-tag">Product Category</div>
+        <div class="cat-cover-name">{{ cat_name }}</div>
+        <div class="cat-cover-line"></div>
+        <div class="cat-cover-count">{{ cat_items|length }} product{{ 's' if cat_items|length > 1 else '' }}</div>
+    </div>
+</div>
+<!-- Products in this category -->
+{% for p in cat_items %}
 <div class="page page-detail">
     <div class="detail-content">
         <div class="detail-left">
@@ -593,9 +435,16 @@
         </div>
         <div class="detail-right">
             <h2 class="detail-name {% if p['Product Name']|length > 70 %}detail-name-long{% endif %}">{{ p["Product Name"] }}</h2>
+            {% if p["Category Path"] %}<div style="font-size:5.5pt;color:var(--gray);margin-bottom:2pt;letter-spacing:0.3pt;">{{ p["Category Path"] }}</div>{% endif %}
+
             {% if p["Promotion Angle"] %}<div class="detail-tagline">{{ p["Promotion Angle"] }}</div>{% endif %}
-            {% if p["Category Path"] %}<div style="font-size:5.5pt;color:var(--gray);margin-top:2pt;letter-spacing:0.3pt;">{{ p["Category Path"] }}</div>{% endif %}
-            {% if p["Selling Point 1"] %}<div class="detail-desc">{{ p["Selling Point 1"] }}</div>{% endif %}
+
+            {# Only show Selling Point 1 separately if it's different from Promotion Angle #}
+            {% if p["Selling Point 1"] and p["Selling Point 1"] != p["Promotion Angle"] %}
+            <div class="detail-desc">{{ p["Selling Point 1"] }}</div>
+            {% elif not p["Promotion Angle"] and p["Selling Point 1"] %}
+            <div class="detail-desc">{{ p["Selling Point 1"] }}</div>
+            {% endif %}
 
             <div class="detail-meta-row">
                 <div class="detail-meta-box detail-meta-box-brand">
@@ -637,12 +486,54 @@
                 </div>
                 {% endif %}
             </div>
-            {% if p["Product URL"] %}
-            <div style="margin-top:3pt;">
-                <span style="font-size:6pt;color:var(--gray);text-transform:uppercase;letter-spacing:0.5pt;">Product Link</span>
-                <div style="font-size:5.5pt;color:var(--text-light);word-break:break-all;">{{ p["Product URL"] }}</div>
+        </div>
+        {% if p["Product URL"] and qr_codes.get(global_idx.value) %}
+        <div class="detail-qr">
+            <img src="data:image/png;base64,{{ qr_codes[global_idx.value] }}" alt="QR">
+            <div>Scan for details</div>
+        </div>
+        {% endif %}
+    </div>
+    <div class="brand-bar">Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}</div>
+</div>
+{% set global_idx.value = global_idx.value + 1 %}
+{% endfor %}
+{% endfor %}
+{% else %}
+{% for p in products %}
+<div class="page page-detail">
+    <div class="detail-content">
+        <div class="detail-left">
+            <div class="detail-img-wrap">
+                {% if p["Image URL"] %}<img src="{{ p['Image URL'] }}" alt="">
+                {% else %}<div class="detail-img-placeholder">Product Image<br>Not Available</div>{% endif %}
+            </div>
+        </div>
+        <div class="detail-right">
+            <h2 class="detail-name {% if p['Product Name']|length > 70 %}detail-name-long{% endif %}">{{ p["Product Name"] }}</h2>
+            {% if p["Promotion Angle"] %}<div class="detail-tagline">{{ p["Promotion Angle"] }}</div>{% endif %}
+            {% if p["Category Path"] %}<div style="font-size:5.5pt;color:var(--gray);margin-bottom:2pt;letter-spacing:0.3pt;">{{ p["Category Path"] }}</div>{% endif %}
+            {% if p["Selling Point 1"] and p["Selling Point 1"] != p["Promotion Angle"] %}<div class="detail-desc">{{ p["Selling Point 1"] }}</div>{% endif %}
+
+            <div class="detail-meta-row">
+                <div class="detail-meta-box detail-meta-box-brand"><div class="detail-meta-box-label">Brand</div><div class="detail-meta-box-value">{{ p["Brand"] or "—" }}</div></div>
+                <div class="detail-meta-box detail-meta-box-price"><div class="detail-meta-box-label">Price</div><div class="detail-meta-box-value">{{ p["Price"] or "—" }}</div></div>
+                <div class="detail-meta-box detail-meta-box-cat"><div class="detail-meta-box-label">Category</div><div class="detail-meta-box-value">{{ p["Category"] or "—" }}</div></div>
+            </div>
+            {% if p["Selling Point 1"] or p["Selling Point 2"] or p["Selling Point 3"] %}
+            <div class="detail-sell-section">
+                <div class="detail-sell-title">Key Selling Points</div>
+                <ul class="detail-sell-list">
+                    {% if p["Selling Point 1"] %}<li>{{ p["Selling Point 1"] }}</li>{% endif %}
+                    {% if p["Selling Point 2"] %}<li>{{ p["Selling Point 2"] }}</li>{% endif %}
+                    {% if p["Selling Point 3"] %}<li>{{ p["Selling Point 3"] }}</li>{% endif %}
+                </ul>
             </div>
             {% endif %}
+            <div class="detail-specs">
+                {% if p["Weight"] %}<div class="detail-spec-item"><span class="detail-spec-label">Item Weight</span><span class="detail-spec-value">{{ p["Weight"] }}</span></div>{% endif %}
+                {% if p["Dimensions"] %}<div class="detail-spec-item"><span class="detail-spec-label">Item Size</span><span class="detail-spec-value">{{ p["Dimensions"] }}</span></div>{% endif %}
+            </div>
         </div>
         {% if p["Product URL"] and qr_codes.get(loop.index0) %}
         <div class="detail-qr">
@@ -651,13 +542,12 @@
         </div>
         {% endif %}
     </div>
-    <div class="brand-bar">
-        Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}
-    </div>
+    <div class="brand-bar">Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}</div>
 </div>
 {% endfor %}
+{% endif %}
 
-<!-- ═══════════ COMPARISON ═══════════ -->
+<!-- ═════ COMPARISON ═════ -->
 <div class="page-flow page-comparison">
     <div class="comparison-content">
         <div class="comparison-header">
@@ -668,13 +558,8 @@
         <p class="comparison-desc">A customer-friendly summary for quick product selection and follow-up discussions.</p>
         <table class="comp-table">
             <colgroup>
-                <col style="width:28%;">
-                <col style="width:11%;">
-                <col style="width:12%;">
-                <col style="width:7%;">
-                <col style="width:11%;">
-                <col style="width:13%;">
-                <col style="width:18%;">
+                <col style="width:28%;"><col style="width:11%;"><col style="width:12%;">
+                <col style="width:7%;"><col style="width:11%;"><col style="width:13%;"><col style="width:18%;">
             </colgroup>
             <thead><tr>
                 <th>Product</th><th>Brand</th><th>Category</th><th>Price</th><th>Weight</th><th>Dimensions</th><th>Promotion Angle</th>
@@ -694,13 +579,12 @@
             </tbody>
         </table>
         <div class="comp-notes">
-            <strong>Note:</strong>
-            Product images, pricing and product details are based on the uploaded spreadsheet.
+            <strong>Note:</strong> Product images, pricing and product details are based on the uploaded spreadsheet.
         </div>
     </div>
 </div>
 
-<!-- ═══════════ NOTES ═══════════ -->
+<!-- ═════ NOTES ═════ -->
 <div class="page page-notes">
     <div class="notes-content">
         <div class="notes-box">
@@ -713,9 +597,7 @@
             </div>
         </div>
     </div>
-    <div class="brand-bar">
-        Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}
-    </div>
+    <div class="brand-bar">Product Catalog<span class="dot">·</span>Client Promotion<span class="dot">·</span>{{ now.year }}</div>
 </div>
 
 </body>
